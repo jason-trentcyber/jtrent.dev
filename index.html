@@ -3,131 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jason Trent — Architect & Engineer</title>
-  <meta name="description" content="Jason Trent: architect and engineer for teams who need production systems, not prototypes. Small projects, dedicated projects, and multi-month engagements.">
+  <title>Jason Trent</title>
+  <meta name="description" content="Jason Trent builds production systems, not prototypes. Architect and engineer for teams shipping software that has to keep running.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --ink: #1a1a1a;
-      --muted: #5c5c5c;
-      --accent: #0b2545; /* deep navy */
-      --accent-2: #c73e3e; /* the "work with me" hinge color */
-      --bg: #ffffff;
-      --line: #e4e4e4;
-    }
-    * { box-sizing: border-box; margin: 0; }
-    html { -webkit-font-smoothing: antialiased; }
-    body {
-      font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-      color: var(--ink);
-      background: var(--bg);
-      line-height: 1.55;
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 0 1.2rem;
-    }
-    h1 { font-size: 2rem; letter-spacing: -0.01em; }
-    h2 { font-size: 1.15rem; margin: 2.2rem 0 .4rem 0; color: var(--muted); }
-    p  { font-size: 1rem; }
-    .muted { color: var(--muted); }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .hero { padding: 3.5rem 0 1.5rem 0; }
-    .hero h1 { margin-bottom: .6rem; }
-    .hero .tag { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.1rem; }
-    .work-with {
-      display: inline-block;
-      background: var(--accent-2);
-      color: #fff;
-      padding: .8rem 1.4rem;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 1rem;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .work-with:hover { background: #a83232; }
-
-    .where  { margin-top: 2.4rem; color: var(--ink); }
-    .where h2 { color: var(--ink); }
-
-    .tier { border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.2rem; margin: .7rem 0; }
-    .tier h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: .3rem; }
-    .tier p  { font-size: .95rem; }
-
-    .contact { padding: 2.6rem 0 1rem 0; border-top: 1px solid var(--line); }
-    .toast { position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: .7rem 1.2rem; border-radius: 6px; font-size: .9rem; opacity: 0; transition: opacity .3s; z-index: 5; }
-    .toast.show { opacity: 1; }
-
-    @media (prefers-color-scheme: dark) {
-      :root { --ink: #ececec; --muted: #a3a3a3; --accent: #8fb3e6; --accent-2: #d64545; --bg: #121212; --line: #2c2c2c; }
-      .work-with:hover { background: #b53a3a; }
-    }
+    :root{ --bg:#f5f3ef; --ink:#0f2b4c; }
+    *{box-sizing:border-box; margin:0}
+    html{-webkit-font-smoothing:antialiased}
+    body{background:var(--bg); color:var(--ink); font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif; min-height:100vh; display:flex; flex-direction:column}
+    .wrap{max-width:1080px; margin-inline:auto; width:100%}
+    header{padding:24px}
+    header .brand{font-family:"DM Serif Display",Georgia,serif; font-size:22px; color:var(--ink); text-decoration:none}
+    main{flex:1; display:flex; flex-direction:column}
+    section{padding:64px 24px}
+    .narrow{max-width:720px; margin-inline:auto; width:100%}
+    h1{font-family:"DM Serif Display",Georgia,serif; font-weight:400; font-size:40px; line-height:1.15}
+    @media(min-width:640px){h1{font-size:52px}}
+    h2{font-family:"DM Serif Display",Georgia,serif; font-weight:400; font-size:30px; line-height:1.2; margin-bottom:20px}
+    p{font-size:18px; line-height:1.65; color:rgba(15,43,76,.7)}
+    p + p{margin-top:16px}
+    a{color:var(--ink); text-decoration:underline; text-decoration-color:rgba(15,43,76,.3); text-underline-offset:4px}
+    a:hover{text-decoration-color:var(--ink)}
+    .actions{margin-top:40px; display:flex; flex-direction:column; gap:12px}
+    @media(min-width:640px){.actions{flex-direction:row; align-items:center}}
+    .btn{display:inline-flex; align-items:center; justify-content:center; background:var(--ink); color:#fff; padding:12px 24px; border-radius:6px; font-size:15px; font-weight:500; text-decoration:none}
+    .btn:hover{background:rgba(15,43,76,.9)}
+    .link{display:inline-flex; align-items:center; justify-content:center; padding:12px 24px; font-size:15px; color:rgba(15,43,76,.7); text-decoration:none}
+    .link:hover{color:var(--ink)}
+    .hero{flex:1; display:flex; align-items:center}
+    .hero p{margin-top:24px}
+    .tiers{display:grid; gap:32px}
+    @media(min-width:640px){.tiers{grid-template-columns:repeat(3,1fr)}}
+    .tiers h3{font-family:"DM Serif Display",Georgia,serif; font-weight:400; font-size:22px; margin-bottom:8px}
+    .tiers p{font-size:16px}
+    .rule{border:0; border-top:1px solid rgba(15,43,76,.12); margin:0 24px}
+    footer{padding:40px 24px; font-size:14px; color:rgba(15,43,76,.5)}
+    footer .row{display:flex; flex-direction:column; gap:8px}
+    @media(min-width:640px){footer .row{flex-direction:row; justify-content:space-between}}
+    footer a{color:inherit; text-decoration:none}
+    footer a:hover{color:var(--ink)}
   </style>
 </head>
 <body>
+<main>
+  <header><div class="wrap"><a class="brand" href="/">Jason Trent</a></div></header>
 
   <section class="hero">
-    <h1>Jason Trent</h1>
-    <p class="tag">Architect &amp; engineer for teams who need production systems, not prototypes.</p>
-    <button class="work-with" id="workWith">work with me&nbsp;→</button>
+    <div class="narrow">
+      <h1>Production systems, not prototypes.</h1>
+      <p>I'm an architect and engineer in Middle Tennessee. Twenty years of software that has to keep running, most of it in healthcare and fintech. Most recently I built <a href="https://frontdesk.jtrent.dev">frontdesk</a>, an AI request desk, in public, with AI agents writing most of the code behind review gates that actually block.</p>
+      <div class="actions">
+        <a class="btn" href="/writing/ai-first-sdlc/">Read what the guardrails caught</a>
+        <a class="link" href="mailto:jason@jtrent.dev">jason@jtrent.dev</a>
+      </div>
+    </div>
   </section>
 
-  <section class="where">
-    <h2>where I work</h2>
-    <p>
-      I've spent 20 years building production software — architect and founding engineer
-      on a healthcare platform that reached 150+ hospitals, and on AI-first delivery
-      systems where agents and engineers ship to the same codebase behind real review gates.
-      <a href="https://github.com/jason-trentcyber/frontdesk-intake">frontdesk-intake</a> is the open, working example of that: built in public,
-      <a href="https://frontdesk.jtrent.dev">live</a>, with the ADRs and CI to show the thinking.
-    </p>
-    <p class="muted" style="margin-top:.8rem">
-      Tell me roughly what you're building and what's stuck, and I'll tell you whether I can help.
-    </p>
-  </section>
+  <hr class="rule">
 
   <section>
-    <h2>writing</h2>
-    <div class="tier">
-      <h3><a href="/writing/ai-first-sdlc/">I let AI agents write 94 pull requests. The interesting part is the 21 times they got blocked.</a></h3>
-      <p class="muted">What it takes to make agent output safe to merge — and what happened when the guardrails blocked me.</p>
+    <div class="narrow">
+      <h2>The open example</h2>
+      <p>94 pull requests in 16 days, 21 of them blocked by a review agent reading against written decisions. An eval gate that found a bug already in production. An ops agent that reads the cluster every six hours through credentials that can't change anything. All of it public.</p>
+      <p><a href="https://github.com/jason-trentcyber/frontdesk-intake">Repository</a> · <a href="https://frontdesk.jtrent.dev">Live app</a> · <a href="https://jason-trentcyber.github.io/frontdesk-intake/architecture.html">Architecture</a></p>
     </div>
   </section>
+
+  <hr class="rule">
 
   <section>
-    <h2>how we work</h2>
-
-    <div class="tier">
-      <h3>Small project</h3>
-      <p>A focused, fixed-scope build — a tool, an integration, an audit. You get a clear deliverable, a clear timeline, and a clear price before we start.</p>
-    </div>
-
-    <div class="tier">
-      <h3>Dedicated project</h3>
-      <p>A build that needs more than a weekend — an embedded effort for weeks to a few months, working alongside your team on one concrete system.</p>
-    </div>
-
-    <div class="tier">
-      <h3>Multi-month engagement</h3>
-      <p>Embedded architecture and engineering leadership for a longer runway — the kind of work that reshapes how a team ships, not just what it ships.</p>
+    <div class="narrow">
+      <h2>How we work</h2>
+      <div class="tiers">
+        <div>
+          <h3>Small project</h3>
+          <p>A fixed-scope build or review. Clear deliverable, timeline, and price before we start.</p>
+        </div>
+        <div>
+          <h3>Dedicated build</h3>
+          <p>Weeks to a few months embedded with your team on one concrete system, design through production.</p>
+        </div>
+        <div>
+          <h3>Multi-month engagement</h3>
+          <p>Architecture and engineering leadership for a longer runway. Changes how a team ships, not just what.</p>
+        </div>
+      </div>
+      <div class="actions">
+        <a class="btn" href="mailto:jason@jtrent.dev?subject=Let%27s%20talk">Schedule a call</a>
+        <a class="link" href="https://github.com/jason-trentcyber">GitHub</a>
+      </div>
     </div>
   </section>
 
-  <section class="contact">
-    <h2 style="color:var(--ink)">ready when you are</h2>
-    <p class="muted" style="margin:.5rem 0 1rem 0">
-      Reach me at <a href="mailto:jason@jtrent.dev">jason@jtrent.dev</a>, or use the button.
-    </p>
-    <button class="work-with" id="scheduleCall">schedule a call</button>
-  </section>
-
-  <div class="toast" id="toast">Thanks — that will open the contact flow once the schedule link is live.</div>
-
-  <script>
-    const toast = () => { const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
-    document.getElementById('workWith').onclick = (e) => { e.preventDefault(); document.getElementById('scheduleCall').focus(); document.getElementById('scheduleCall').scrollIntoView({behavior:'smooth'}); toast(); };
-    document.getElementById('scheduleCall').onclick = (e) => { e.preventDefault(); window.location.href = 'mailto:jason@jtrent.dev?subject=Let%27s%20talk%20' ; };
-  </script>
+  <footer>
+    <div class="wrap row">
+      <p style="font-size:14px">© 2026 Jason Trent</p>
+      <div><a href="mailto:jason@jtrent.dev">jason@jtrent.dev</a></div>
+    </div>
+  </footer>
+</main>
 </body>
 </html>
