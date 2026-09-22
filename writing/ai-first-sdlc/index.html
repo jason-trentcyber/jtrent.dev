@@ -82,11 +82,11 @@
 
   <p>Over the last two weeks I built a working SaaS product with AI agents doing most of the typing. That part isn't interesting anymore. Everyone has that post.</p>
 
-  <p>Here's the part I haven't seen anyone show: what it takes to make agent output safe to merge, and what happens when you actually enforce it.</p>
+  <p>What I haven't seen anyone show is what it takes to make agent output safe to merge, and what happens when you actually enforce it.</p>
 
-  <p>The project is <strong>frontdesk</strong> — an AI request desk for small businesses. A customer submits a question through a public form. The system classifies it, retrieves the business's own documents, and drafts a reply with citations. A human approves, edits, or rejects it. Nothing reaches a customer without that human step.</p>
+  <p>The project is <strong>frontdesk</strong>, an AI request desk for small businesses. A customer submits a question through a public form. The system classifies it, retrieves the business's own documents, and drafts a reply with citations. A human approves, edits, or rejects it. Nothing reaches a customer without that human step.</p>
 
-  <p>It's live at <a href="https://frontdesk.jtrent.dev">frontdesk.jtrent.dev</a>. The repo is public. Every number below is checkable against it.</p>
+  <p>It's live at <a href="https://frontdesk.jtrent.dev">frontdesk.jtrent.dev</a> and the repo is public, so every number below is checkable.</p>
 
   <h2>The ledger</h2>
 
@@ -104,33 +104,33 @@
 
   <h2>What a guardrail looks like when it's real</h2>
 
-  <p>Every PR carries a required label naming who wrote it and a <code>Model:</code> line naming which model. CI rejects the PR if either is missing or ambiguous. Provenance isn't a convention people remember, it's a gate.</p>
+  <p>Every PR carries a required label naming who wrote it and a <code>Model:</code> line naming which model. CI rejects the PR if either is missing or ambiguous. Provenance is a gate here, not a convention people are supposed to remember.</p>
 
   <p>Then a review agent reads every diff against a written rubric: tenancy, secrets, architectural drift, whether the PR contradicts a decision record. A finding marked <code>blocking</code> fails a required check. No agent can merge. Only I can.</p>
 
-  <p>PR #92 hit that wall seven times. One finding was that the code named a specific cloud vendor inside a layer where a decision record had explicitly said vendor names don't belong. A human reviewer skimming a green diff at 11pm misses that. The agent didn't.</p>
+  <p>PR #92 hit that wall seven times. One finding was that the code named a specific cloud vendor inside a layer where a decision record had explicitly said vendor names don't belong. That's exactly what a human reviewer skimming a green diff at 11pm lets through.</p>
 
   <p>Yesterday it blocked me. Twice.</p>
 
-  <p>I'd changed a mechanism a decision record had decided on, and recorded the change by editing that record in place. The repo's own docs say: superseding a decision means a new file, never edit a decided one. I wrote that rule. I broke it anyway. The reviewer quoted my own line back at me and refused the merge until I wrote the superseding record properly.</p>
+  <p>I'd changed a mechanism a decision record had decided on, and recorded the change by editing that record in place. The repo's own docs say superseding a decision means a new file, never edit a decided one. I wrote that rule. I broke it anyway. The reviewer quoted my own line back at me and refused the merge until I wrote the superseding record properly.</p>
 
-  <p class="pull">That's the whole argument. The value isn't that an AI reviews code. It's that the rules get enforced against the person who wrote the rules.</p>
+  <p class="pull">That's the part I'd defend hardest. Anyone can point an AI at a diff. What was worth building is the thing that held when the person breaking the rules was me.</p>
 
   <h2>The eval gate caught a bug I'd already shipped</h2>
 
-  <p>Prompt and retrieval changes run against 20 labeled requests before they can merge. Classification accuracy, recall@5, recall@1. None may drop below a committed baseline, and only a human-labeled PR can raise that baseline — an agent can't move its own goalposts.</p>
+  <p>Prompt and retrieval changes run against 20 labeled requests before they can merge. Classification accuracy, recall@5, recall@1. None may drop below a committed baseline, and only a human-labeled PR can raise that baseline, so an agent can't move its own goalposts.</p>
 
   <p>The first time it ran, accuracy came back at <strong>0.20</strong>.</p>
 
-  <p>Not a regression. The model was wrapping its JSON in a markdown code fence, the parser didn't strip it, and four out of five classifications were silently failing. That was in production. The demo looked fine because the fallback path was doing something reasonable.</p>
+  <p>That wasn't a regression, it was a live bug. The model was wrapping its JSON in a markdown code fence, the parser didn't strip it, and four out of five classifications were failing silently. In production. The demo looked fine because the fallback path was doing something reasonable.</p>
 
   <p>Two weeks of manual testing hadn't found it. The first automated run did, in about a minute.</p>
 
-  <h2>The part I think is actually novel</h2>
+  <h2>The ops agent</h2>
 
-  <p>Every six hours, an agent reads production. Prometheus alerts, error-shaped log lines, pod restarts, failed jobs. It does this through a Kubernetes service account that cannot create, patch, exec, or read secrets — I've verified each of those returns <code>no</code>. It has exactly one write capability: open a GitHub issue, with quoted evidence, a hypothesis, a proposed fix, and a confidence level.</p>
+  <p>Every six hours, an agent reads production. Prometheus alerts, error-shaped log lines, pod restarts, failed jobs. It does this through a Kubernetes service account that cannot create, patch, exec, or read secrets. I've verified each of those returns <code>no</code>. It has exactly one write capability: open a GitHub issue, with quoted evidence, a hypothesis, a proposed fix, and a confidence level.</p>
 
-  <p>It cannot fix anything. That's deliberate. An agent that can restart a deployment at 3am is a liability. An agent that can tell you <em>why</em> you should is an on-call engineer who never sleeps and never guesses at what it saw.</p>
+  <p>It cannot fix anything, on purpose. I don't want a thing that restarts deployments at 3am while I'm asleep. I want a thing that tells me what it saw, with the log lines attached, so I can decide at 7am whether it mattered.</p>
 
   <p>Its instructions live in the repo, so changing what the agent is allowed to do is a pull request that gets reviewed like any other.</p>
 
@@ -142,18 +142,18 @@
 
   <h2>What I'd tell someone about to try this</h2>
 
-  <p>The models are not the hard part. They're good enough. The hard part is that an agent will confidently do something reasonable-looking that violates a decision you made three weeks ago and forgot you made, and it will do it in a diff that passes every test.</p>
+  <p>The models are good enough. That's not where the difficulty lives. An agent will confidently do something reasonable-looking that violates a decision you made three weeks ago and forgot you made, and it will do it in a diff that passes every test.</p>
 
-  <p>So the work isn't prompting. It's building the machinery that makes a violation impossible to merge: decisions written down where agents read them, provenance that can't be omitted, a reviewer with a rubric and the authority to say no, an eval gate an agent can't move, and a human on the merge button.</p>
+  <p>Most of the effort, then, goes into machinery that makes that violation impossible to merge. Decisions written down where agents read them. Provenance that can't be omitted. A reviewer with a rubric and the authority to say no. An eval gate an agent can't move. A human on the merge button.</p>
 
-  <p>Five of those six guardrails were enforcing before I wrote this. The sixth, the ops agent, went live this week.</p>
+  <p>Five of those six were enforcing before I wrote this. The sixth, the ops agent, went live this week.</p>
 
   <p>The repo is public, including the pull requests where the guardrails blocked me. Those are the ones worth reading.</p>
 
   <p><strong><a href="https://github.com/jason-trentcyber/frontdesk-intake">github.com/jason-trentcyber/frontdesk-intake</a></strong> · live at <strong><a href="https://frontdesk.jtrent.dev">frontdesk.jtrent.dev</a></strong></p>
 
   <div class="cta">
-    <p class="bio">I'm Jason Trent. 20 years building production software, most recently as an architect on a healthcare platform serving 150+ hospitals. I'm looking for AI architecture work — the kind where somebody has to decide what agents are allowed to touch. If that's a problem you have, I'd like to talk.</p>
+    <p class="bio">I'm Jason Trent. 20 years building production software, most recently as an architect on a healthcare platform serving 150+ hospitals. I'm looking for AI architecture work, the kind where somebody has to decide what agents are allowed to touch. If that's a problem you have, I'd like to talk.</p>
     <a class="work-with" href="mailto:jason@jtrent.dev?subject=AI%20architecture%20work">jason@jtrent.dev →</a>
   </div>
 
