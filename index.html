@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jason Trent — Architect & Engineer</title>
+  <meta name="description" content="Jason Trent: architect and engineer for teams who need production systems, not prototypes. Small projects, dedicated projects, and multi-month engagements.">
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #666;
+      --accent: #0b2545; /* deep navy */
+      --accent-2: #c73e3e; /* the "work with me" hinge color */
+      --bg: #ffffff;
+      --line: #e4e4e4;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.55;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.2rem;
+    }
+    h1 { font-size: 2rem; letter-spacing: -0.01em; }
+    h2 { font-size: 1.15rem; margin: 2.2rem 0 .4rem 0; color: var(--muted); }
+    p  { font-size: 1rem; }
+    .muted { color: var(--muted); }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero { padding: 3.5rem 0 1.5rem 0; }
+    .hero h1 { margin-bottom: .6rem; }
+    .hero .tag { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .work-with {
+      display: inline-block;
+      background: var(--accent-2);
+      color: #fff;
+      padding: .8rem 1.4rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .work-with:hover { background: #a83232; }
+
+    .where  { margin-top: 2.4rem; color: var(--ink); }
+    .where h2 { color: var(--ink); }
+
+    .tier { border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.2rem; margin: .7rem 0; }
+    .tier h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: .3rem; }
+    .tier p  { font-size: .95rem; }
+
+    .contact { padding: 2.6rem 0 1rem 0; border-top: 1px solid var(--line); }
+    .toast { position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%); background: #222; color: #fff; padding: .7rem 1.2rem; border-radius: 6px; font-size: .9rem; opacity: 0; transition: opacity .3s; z-index: 5; }
+    .toast.show { opacity: 1; }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #111; color: #eee; }
+      .muted { color: #999; }
+      :root body { --line: #333; }
+      .tier { border-color: #333; }
+      .contact { border-top-color: #333; }
+      a { color: #7aa2d6; }
+      .hero .tag { color: #aaa; }
+      h2 { color: #999; }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <h1>Jason Trent</h1>
+    <p class="tag">Architect &amp; engineer for teams who need production systems, not prototypes.</p>
+    <button class="work-with" id="workWith">work with me&nbsp;→</button>
+  </section>
+
+  <section class="where">
+    <h2>where I work</h2>
+    <p>
+      I've spent 20 years building production software — architect and founding engineer
+      on a healthcare platform that reached 150+ hospitals, and on AI-first delivery
+      systems where agents and engineers ship to the same codebase behind real review gates.
+      Frontdesk-intake is the open, working example of that: built in public, live, with the
+      ADRs and CI to show the thinking.
+    </p>
+    <p class="muted" style="margin-top:.8rem">
+      Tell me roughly what you're building and what's stuck, and I'll tell you whether I can help.
+    </p>
+  </section>
+
+  <section>
+    <h2>how we work</h2>
+
+    <div class="tier">
+      <h3>Small project</h3>
+      <p>A focused, fixed-scope build — a tool, an integration, an audit. You get a clear deliverable, a clear timeline, and a clear price before we start.</p>
+    </div>
+
+    <div class="tier">
+      <h3>Dedicated project</h3>
+      <p>A build that needs more than a weekend — an embedded effort for weeks to a few months, working alongside your team on one concrete system.</p>
+    </div>
+
+    <div class="tier">
+      <h3>Multi-month engagement</h3>
+      <p>Embedded architecture and engineering leadership for a longer runway — the kind of work that reshapes how a team ships, not just what it ships.</p>
+    </div>
+  </section>
+
+  <section class="contact">
+    <h2 style="color:var(--ink)">ready when you are</h2>
+    <p class="muted" style="margin:.5rem 0 1rem 0">
+      Reach me at <a href="mailto:jason@jtrent.dev">jason@jtrent.dev</a>, or use the button.
+    </p>
+    <button class="work-with" id="scheduleCall">schedule a call</button>
+  </section>
+
+  <div class="toast" id="toast">Thanks — that will open the contact flow once the schedule link is live.</div>
+
+  <script>
+    const toast = () => { const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); };
+    document.getElementById('workWith').onclick = (e) => { e.preventDefault(); document.getElementById('scheduleCall').focus(); document.getElementById('scheduleCall').scrollIntoView({behavior:'smooth'}); toast(); };
+    document.getElementById('scheduleCall').onclick = (e) => { e.preventDefault(); window.location.href = 'mailto:jason@jtrent.dev?subject=Let%27s%20talk%20' ; };
+  </script>
+</body>
+</html>
