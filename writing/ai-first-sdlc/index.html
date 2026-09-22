@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>I let AI agents write 94 pull requests — Jason Trent</title>
+  <meta name="description" content="94 merged PRs in 16 days with AI agents doing most of the typing. The interesting part is the 21 times the guardrails blocked them — including twice when they blocked me.">
+  <link rel="canonical" href="https://jtrent.dev/writing/ai-first-sdlc/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="I let AI agents write 94 pull requests. The interesting part is the 21 times they got blocked.">
+  <meta property="og:description" content="What it takes to make agent output safe to merge — provenance gates, a review agent with a rubric, an eval gate an agent can't move, and an ops agent that can only open issues.">
+  <meta property="og:url" content="https://jtrent.dev/writing/ai-first-sdlc/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #666;
+      --accent: #0b2545;
+      --accent-2: #c73e3e;
+      --bg: #ffffff;
+      --line: #e4e4e4;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.2rem 4rem 1.2rem;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .back { display: inline-block; font-size: .9rem; color: var(--muted); padding: 1.6rem 0 0 0; }
+    .back:hover { color: var(--ink); }
+
+    h1 { font-size: 1.9rem; line-height: 1.25; letter-spacing: -0.015em; margin: 1.6rem 0 .6rem 0; }
+    h2 { font-size: 1.2rem; margin: 2.6rem 0 .6rem 0; letter-spacing: -0.005em; }
+    p  { font-size: 1.04rem; margin: 1rem 0; }
+    .dateline { color: var(--muted); font-size: .92rem; margin-bottom: 1.6rem; }
+
+    ul { margin: 1rem 0 1rem 1.2rem; padding: 0; }
+    li { font-size: 1.04rem; margin: .35rem 0; }
+
+    .ledger { border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.3rem; margin: 1.4rem 0; }
+    .ledger ul { margin: 0 0 0 1.1rem; }
+
+    .pull { border-left: 3px solid var(--accent-2); padding-left: 1.1rem; margin: 1.6rem 0; font-size: 1.1rem; }
+
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; background: #f4f4f4; padding: .1rem .35rem; border-radius: 4px; }
+
+    .cta { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.8rem; }
+    .cta .work-with {
+      display: inline-block; background: var(--accent-2); color: #fff;
+      padding: .8rem 1.4rem; border-radius: 6px; font-weight: 600;
+      font-size: 1rem; text-decoration: none; margin-top: .4rem;
+    }
+    .cta .work-with:hover { background: #a83232; text-decoration: none; }
+    .bio { color: var(--muted); font-size: .95rem; margin-top: 1.4rem; }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #111; color: #eee; }
+      :root body { --line: #333; --muted: #999; }
+      a { color: #7aa2d6; }
+      code { background: #1e1e1e; }
+      .ledger { border-color: #333; }
+      .cta { border-top-color: #333; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="back" href="/">← jtrent.dev</a>
+
+  <h1>I let AI agents write 94 pull requests. The interesting part is the 21 times they got blocked.</h1>
+  <p class="dateline">September 2026</p>
+
+  <p>Over the last two weeks I built a working SaaS product with AI agents doing most of the typing. That part isn't interesting anymore. Everyone has that post.</p>
+
+  <p>Here's the part I haven't seen anyone show: what it takes to make agent output safe to merge, and what happens when you actually enforce it.</p>
+
+  <p>The project is <strong>frontdesk</strong> — an AI request desk for small businesses. A customer submits a question through a public form. The system classifies it, retrieves the business's own documents, and drafts a reply with citations. A human approves, edits, or rejects it. Nothing reaches a customer without that human step.</p>
+
+  <p>It's live at <a href="https://frontdesk.jtrent.dev">frontdesk.jtrent.dev</a>. The repo is public. Every number below is checkable against it.</p>
+
+  <h2>The ledger</h2>
+
+  <div class="ledger">
+    <ul>
+      <li>94 merged pull requests, 198 commits, 16 days</li>
+      <li>52 by an agent running on my VPS, 26 by an agent in my IDE, 14 by Dependabot, 2 by me directly</li>
+      <li>41 architecture decision records, written before the code they govern</li>
+      <li>21 blocking reviews across 10 pull requests</li>
+      <li>One PR got blocked 7 times before it merged clean</li>
+    </ul>
+  </div>
+
+  <p>That last line is the one I'd want to be asked about in an interview.</p>
+
+  <h2>What a guardrail looks like when it's real</h2>
+
+  <p>Every PR carries a required label naming who wrote it and a <code>Model:</code> line naming which model. CI rejects the PR if either is missing or ambiguous. Provenance isn't a convention people remember, it's a gate.</p>
+
+  <p>Then a review agent reads every diff against a written rubric: tenancy, secrets, architectural drift, whether the PR contradicts a decision record. A finding marked <code>blocking</code> fails a required check. No agent can merge. Only I can.</p>
+
+  <p>PR #92 hit that wall seven times. One finding was that the code named a specific cloud vendor inside a layer where a decision record had explicitly said vendor names don't belong. A human reviewer skimming a green diff at 11pm misses that. The agent didn't.</p>
+
+  <p>Yesterday it blocked me. Twice.</p>
+
+  <p>I'd changed a mechanism a decision record had decided on, and recorded the change by editing that record in place. The repo's own docs say: superseding a decision means a new file, never edit a decided one. I wrote that rule. I broke it anyway. The reviewer quoted my own line back at me and refused the merge until I wrote the superseding record properly.</p>
+
+  <p class="pull">That's the whole argument. The value isn't that an AI reviews code. It's that the rules get enforced against the person who wrote the rules.</p>
+
+  <h2>The eval gate caught a bug I'd already shipped</h2>
+
+  <p>Prompt and retrieval changes run against 20 labeled requests before they can merge. Classification accuracy, recall@5, recall@1. None may drop below a committed baseline, and only a human-labeled PR can raise that baseline — an agent can't move its own goalposts.</p>
+
+  <p>The first time it ran, accuracy came back at <strong>0.20</strong>.</p>
+
+  <p>Not a regression. The model was wrapping its JSON in a markdown code fence, the parser didn't strip it, and four out of five classifications were silently failing. That was in production. The demo looked fine because the fallback path was doing something reasonable.</p>
+
+  <p>Two weeks of manual testing hadn't found it. The first automated run did, in about a minute.</p>
+
+  <h2>The part I think is actually novel</h2>
+
+  <p>Every six hours, an agent reads production. Prometheus alerts, error-shaped log lines, pod restarts, failed jobs. It does this through a Kubernetes service account that cannot create, patch, exec, or read secrets — I've verified each of those returns <code>no</code>. It has exactly one write capability: open a GitHub issue, with quoted evidence, a hypothesis, a proposed fix, and a confidence level.</p>
+
+  <p>It cannot fix anything. That's deliberate. An agent that can restart a deployment at 3am is a liability. An agent that can tell you <em>why</em> you should is an on-call engineer who never sleeps and never guesses at what it saw.</p>
+
+  <p>Its instructions live in the repo, so changing what the agent is allowed to do is a pull request that gets reviewed like any other.</p>
+
+  <h2>The money</h2>
+
+  <p>$0.0053 per triaged request. $6.49/month for the node. The whole thing runs on one small server.</p>
+
+  <p>I priced the alternative: below roughly 6,600 requests a month, renting tokens beats the cheapest box that can run a model locally. Above that, owning the hardware wins. The cost table is in the README with the arithmetic shown, because "it's cheap" isn't an architecture argument and I'd rather be corrected on numbers than believed on adjectives.</p>
+
+  <h2>What I'd tell someone about to try this</h2>
+
+  <p>The models are not the hard part. They're good enough. The hard part is that an agent will confidently do something reasonable-looking that violates a decision you made three weeks ago and forgot you made, and it will do it in a diff that passes every test.</p>
+
+  <p>So the work isn't prompting. It's building the machinery that makes a violation impossible to merge: decisions written down where agents read them, provenance that can't be omitted, a reviewer with a rubric and the authority to say no, an eval gate an agent can't move, and a human on the merge button.</p>
+
+  <p>Five of those six guardrails were enforcing before I wrote this. The sixth, the ops agent, went live this week.</p>
+
+  <p>The repo is public, including the pull requests where the guardrails blocked me. Those are the ones worth reading.</p>
+
+  <p><strong><a href="https://github.com/jason-trentcyber/frontdesk-intake">github.com/jason-trentcyber/frontdesk-intake</a></strong> · live at <strong><a href="https://frontdesk.jtrent.dev">frontdesk.jtrent.dev</a></strong></p>
+
+  <div class="cta">
+    <p class="bio">I'm Jason Trent. 20 years building production software, most recently as an architect on a healthcare platform serving 150+ hospitals. I'm looking for AI architecture work — the kind where somebody has to decide what agents are allowed to touch. If that's a problem you have, I'd like to talk.</p>
+    <a class="work-with" href="mailto:jason@jtrent.dev?subject=AI%20architecture%20work">jason@jtrent.dev →</a>
+  </div>
+
+</body>
+</html>
