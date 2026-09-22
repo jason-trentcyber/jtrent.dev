@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>I let AI agents write 94 pull requests. The interesting part is the 21 times they got blocked. — Jason Trent</title>
-  <meta name="description" content="What it takes to make AI-agent pull requests safe to merge, with the receipts: 94 PRs, 21 blocking reviews, an eval gate that caught a shipped bug, and a read-only ops agent.">
-  <meta property="og:title" content="I let AI agents write 94 pull requests. The interesting part is the 21 times they got blocked.">
-  <meta property="og:description" content="94 agent-written PRs, 21 blocked. What the guardrails actually caught.">
+  <title>I let AI agents write 95 pull requests. The interesting part is the 21 times they got blocked. — Jason Trent</title>
+  <meta name="description" content="What it takes to make AI-agent pull requests safe to merge, with the receipts: 95 PRs, 21 blocking reviews, an eval gate that caught a shipped bug, and a read-only ops agent.">
+  <meta property="og:title" content="I let AI agents write 95 pull requests. The interesting part is the 21 times they got blocked.">
+  <meta property="og:description" content="95 agent-written PRs, 21 blocked. What the guardrails actually caught.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://jtrent.dev/writing/ai-first-sdlc/">
   <link rel="canonical" href="https://jtrent.dev/writing/ai-first-sdlc/">
@@ -41,22 +41,22 @@
 <body>
   <header><div class="wrap"><a class="brand" href="/">Jason Trent</a></div></header>
   <article>
-    <h1>I let AI agents write 94 pull requests. The interesting part is the 21 times they got blocked.</h1>
+    <h1>I let AI agents write 95 pull requests. The interesting part is the 21 times they got blocked.</h1>
     <p class="byline">September 2026</p>
 <p>Over the last two weeks I built a working SaaS product with AI agents doing most of the typing. That part isn't interesting anymore. Everyone has that post.</p>
 <p>What I haven't seen anyone show is what it takes to make agent output safe to merge, and what happens when you actually enforce it.</p>
 <p>The project is frontdesk, an AI request desk for small businesses. A customer submits a question through a public form. The system classifies it, retrieves the business's own documents, and drafts a reply with citations. A human approves, edits, or rejects it. Nothing reaches a customer without that human step.</p>
 <p>It's live at <a href="https://frontdesk.jtrent.dev">frontdesk.jtrent.dev</a> and the repo is public, so every number below is checkable.</p>
 <h2>The ledger</h2>
-<ul><li>94 merged pull requests, 198 commits, 16 days</li><li>52 by an agent running on my VPS, 26 by an agent in my IDE, 14 by Dependabot, 2 by me directly</li><li>41 architecture decision records, written before the code they govern</li><li>21 blocking reviews across 10 pull requests</li><li>One PR got blocked 7 times before it merged clean</li></ul>
+<ul><li>95 merged pull requests, 198 commits, 16 days (counted 22 September 2026)</li><li>53 by an agent running on my VPS, 26 by an agent in my IDE, 14 by Dependabot, 2 by me directly</li><li>41 architecture decision records, written before the code they govern</li><li>21 blocking reviews across 10 pull requests</li><li>One PR got blocked 7 times before it merged clean</li></ul>
 <p>That last line is the one I'd want to be asked about in an interview.</p>
 <h2>What a guardrail looks like when it's real</h2>
 <p>Every PR carries a required label naming who wrote it and a <code>Model:</code> line naming which model. CI rejects the PR if either is missing or ambiguous. Provenance is a gate here, not a convention people are supposed to remember.</p>
 <p>Then a review agent reads every diff against a written rubric: tenancy, secrets, architectural drift, whether the PR contradicts a decision record. A finding marked <code>blocking</code> fails a required check. No agent can merge. Only I can.</p>
 <p>PR #92 hit that wall seven times. One finding was that the code named a specific cloud vendor inside a layer where a decision record had explicitly said vendor names don't belong. That's exactly what a human reviewer skimming a green diff at 11pm lets through.</p>
-<p>Yesterday it blocked me. Twice.</p>
-<p>I'd changed a mechanism a decision record had decided on, and recorded the change by editing that record in place. The repo's own docs say superseding a decision means a new file, never edit a decided one. I wrote that rule. I broke it anyway. The reviewer quoted my own line back at me and refused the merge until I wrote the superseding record properly.</p>
-<p>That's the part I'd defend hardest. Anyone can point an AI at a diff. What was worth building is the thing that held when the person breaking the rules was me.</p>
+<p>It blocked one of mine too.</p>
+<p>On a PR I was directing, we changed a mechanism a decision record had decided on and recorded the change by appending to that record in place. The repo's own docs say superseding a decision means a new file, never edit a decided one. I wrote that rule. It got broken anyway, on my watch, because appending to one file was faster than writing a new one. The reviewer quoted my own line back at me and refused the merge until the superseding record was written properly.</p>
+<p>That's the part I'd defend hardest. Anyone can point an AI at a diff. What was worth building is the thing that held when the shortcut was mine.</p>
 <h2>The eval gate caught a bug I'd already shipped</h2>
 <p>Prompt and retrieval changes run against 20 labeled requests before they can merge. Classification accuracy, recall@5, recall@1. None may drop below a committed baseline, and only a human-labeled PR can raise that baseline, so an agent can't move its own goalposts.</p>
 <p>The first time it ran, accuracy came back at 0.20.</p>
